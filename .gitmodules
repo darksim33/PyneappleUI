@@ -1,3 +1,6 @@
 [submodule "src/pyneapple"]
 	path = src/pyneapple
 	url = https://github.com/darksim33/Pyneapple
+[submodule "src/radimgarray"]
+	path = src/radimgarray
+	url = https://github.com/darksim33/RadImgArray
