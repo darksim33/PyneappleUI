@@ -1,0 +1,3 @@
+[submodule "src/pyneapple"]
+	path = src/pyneapple
+	url = https://github.com/darksim33/Pyneapple
