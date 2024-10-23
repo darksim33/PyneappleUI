@@ -6,8 +6,27 @@ authors = ["thiel <57491748+darksim33@users.noreply.github.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = "~3.12"
+numpy = [
+    { version = "^2.1.1", python = "^3.10" },
+    { version = "^1.23.0", python = "~3.9" }
+]
+nibabel = "^5.0.1"
+matplotlib = "^3.7.0"
+parallelbar = "^2.4"
+PyQt6 = "^6.4.2"
+pyneapple = { path = "src/pyneapple", develop = true }
+radimgarray = { path = "src/radimgarray", develop = true }
 
+[tool.poetry.group.dev]
+optional = true
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.3.0"
+pytest = "^8.1.1"
+pytest-order = "^1.2.1"
+pytest-qt = "^4.4.0"
+tox = "4.20.0"
 
 [build-system]
 requires = ["poetry-core"]
