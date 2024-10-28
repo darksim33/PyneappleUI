@@ -57,14 +57,14 @@ class ImageContextMenu(CustomContextMenu):
         -------
             The file path to the saved image
         """
-        if self.parent.data.nii_img.path:
-            file_name = self.parent.data.nii_img.path
+        if self.parent.data.img.size > 0 and self.parent.data.img.info["path"]:
+            file_name = self.parent.data.img.info["path"]
             file_path = Path(
                 QtWidgets.QFileDialog.getSaveFileName(
                     self.parent,
                     caption="Save slice image:",
                     directory=(
-                        parent.data.last_dir / (file_name.stem + ".png")
+                        self.parent.data.last_dir / (file_name.stem + ".png")
                     ).__str__(),
                     filter="PNG Files (*.png)",
                 )[0]
@@ -74,14 +74,14 @@ class ImageContextMenu(CustomContextMenu):
             file_path = None
 
         if file_path:
-            parent.image_axis.figure.savefig(
+            self.parent.image_axis.figure.savefig(
                 file_path, bbox_inches="tight", pad_inches=0
             )
             print("Figure saved:", file_path)
 
 
 class PlotDecayContextMenu(CustomContextMenu):
-    def __init__(self, parent: Main):
+    def __init__(self, parent: MainWindow):
         super().__init__(parent)
         self.b_values = np.array([])
         self.load_b_values = QtGui.QAction("Load b-values", self)

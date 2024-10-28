@@ -6,7 +6,7 @@ from multiprocessing import freeze_support
 from PyQt6 import QtWidgets, QtGui, QtCore
 from pathlib import Path
 
-from nifti import Nii
+from radimgarray import RadImgArray, SegImgArray
 
 from .dlg_fitting import FittingDlg
 from .dlg_settings import SettingsDlg
@@ -127,8 +127,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.image_axis = ImageCanvas(
             self,
-            self.data.nii_img,
-            self.data.nii_seg,
+            self.data.img,
+            self.data.seg,
             self.data.plt,
             self.width(),
             self.settings.value("theme", str),
@@ -161,16 +161,16 @@ class MainWindow(QtWidgets.QMainWindow):
     def event_filter_plot_decay(self, event):
         Filter.event_filter_plot_decay(self, event)
 
-    def _get_image_by_label(self) -> Nii:
+    def _get_image_by_label(self) -> RadImgArray | SegImgArray:
         """Get selected Image from settings"""
         if self.settings.value("img_disp_type") == "Img":
-            return self.data.nii_img
+            return self.data.img
         elif self.settings.value("img_disp_type") == "Mask":
-            return self.data.nii_seg
+            return self.data.seg
         elif self.settings.value("img_disp_type") == "Seg":
-            return self.data.nii_seg
+            return self.data.seg
         elif self.settings.value("img_disp_type") == "Dyn":
-            return self.data.nii_dyn
+            return self.data.dyn
 
     def change_theme(self):
         """Changes the App theme"""

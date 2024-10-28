@@ -33,12 +33,12 @@ class Filter:
         """
         if event.button == 1:
             # left mouse button
-            if parent.data.nii_img.path:
+            if parent.data.img.info["path"]:
                 if event.xdata and event.ydata:
                     # check if point is on image
                     position = [round(event.xdata), round(event.ydata)]
                     # correct inverted y-axis
-                    position[1] = parent.data.nii_img.array.shape[1] - position[1]
+                    position[1] = parent.data.img.array.shape[1] - position[1]
                     parent.image_axis.pos_label.setText(
                         f"({position[0]}, {position[1]})"
                     )
@@ -56,7 +56,7 @@ class Filter:
                             parent.plot_layout.data = parent.data
                             parent.plot_layout.plot_pixel_decay(position)
 
-                            if np.any(parent.data.nii_dyn.array):
+                            if np.any(parent.data.dyn.array):
                                 parent.plot_layout.plot_pixel_fit(position)
                                 parent.plot_layout.plot_pixel_spectrum(position)
                         elif parent.data.plt["plt_type"] == "segmentation":
@@ -64,7 +64,7 @@ class Filter:
                             parent.plot_layout.plot_pixel_decay(
                                 position, "segmentation"
                             )
-                            if np.any(parent.data.nii_dyn.array):
+                            if np.any(parent.data.dyn.array):
                                 parent.plot_layout.plot_pixel_fit(position)
                                 parent.plot_layout.plot_pixel_spectrum(position)
 

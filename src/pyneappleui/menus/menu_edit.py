@@ -6,6 +6,8 @@ from typing import TYPE_CHECKING
 from PyQt6.QtWidgets import QMenu
 from PyQt6.QtGui import QAction, QIcon
 
+from radimgarray import tools
+
 from pyneapple.utils import processing
 from .dlg_prompts import ZeroPaddingMissmatchMessageBox
 
@@ -21,21 +23,19 @@ class ImageZeroPadding(QAction):
         self.triggered.connect(self.pad_image)
 
     def pad_image(self):
-        if not (
-            self.parent.data.nii_img.array.shape[0]
-            == self.parent.data.nii_img.array.shape[1]
-        ):
-            if self.parent.data.nii_seg.path:
-                if (
-                    self.parent.data.nii_img.array.shape[0:2]
-                    == self.parent.data.nii_seg.array.shape[0:2]
-                ):
+        if not (self.parent.data.img.shape[0] == self.parent.data.img.shape[1]):
+            if self.parent.data.seg.info["path"]:
+                if self.parent.data.img.shape[0:2] == self.parent.data.seg.shape[0:2]:
                     dlg = ZeroPaddingMissmatchMessageBox()
                     if dlg.exec() == ZeroPaddingMissmatchMessageBox.StandardButton.Yes:
-                        self.parent.data.nii_seg.zero_padding()
-                    self.parent.data.nii_img.zero_padding()
+                        self.parent.data.seg = tools.zero_pad_to_square(
+                            self.parent.data.seg
+                        )  # Note: Might be a bad type
+                    self.parent.data.img = tools.zero_pad_to_square(
+                        self.parent.data.img
+                    )
                     print(
-                        f"Padded Image to {self.parent.data.nii_img.array.shape[0]},{self.parent.data.nii_img.array.shape[1]}"
+                        f"Padded Image to {self.parent.data.img.shape[0]},{self.parent.data.img.shape[1]}"
                     )
                     self.parent.image_axis.setup_image()
 
@@ -49,10 +49,7 @@ class SegmentationZeroPadding(QAction):
         # self.pad_seg.triggerd.connect(self.data.nii_seg.super().zero_padding)
 
     def pad_img(self):
-        if not (
-            self.parent.data.nii_seg.array.shape[0]
-            == self.parent.data.nii_seg.array.shape[1]
-        ):
+        if not (self.parent.data.seg.shape[0] == self.parent.data.seg.shape[1]):
             if self.parent.data.nii_img.path:
                 if (
                     ZeroPaddingMissmatchMessageBox().exec()

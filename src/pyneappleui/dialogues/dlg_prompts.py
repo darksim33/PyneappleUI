@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from PyQt6 import QtWidgets
 from scipy import ndimage
 
-from nifti import Nii, NiiSeg
+from radimgarray import RadImgArray, SegImgArray
 from pyneapple import Parameters, NNLSParams, IVIMParams, IDEALParams, NNLSCVParams
 
 if TYPE_CHECKING:
@@ -60,20 +60,20 @@ class ReshapeSegMessageBox(BasicMessageBox):
 
     @staticmethod
     def reshape(*args):
-        img: Nii = args[0]
-        seg: NiiSeg = args[1]
+        img: RadImgArray = args[0]
+        seg: SegImgArray = args[1]
         new_array = ndimage.zoom(
-            seg.array,
+            seg,
             (
-                img.array.shape[0] / seg.array.shape[0],
-                img.array.shape[1] / seg.array.shape[1],
-                img.array.shape[2] / seg.array.shape[2],
+                img.shape[0] / seg.shape[0],
+                img.shape[1] / seg.shape[1],
+                img.shape[2] / seg.shape[2],
                 1,
             ),
             order=0,
         )
-        print(f"Seg.shape from {seg.array.shape} to {new_array.shape}")
-        return NiiSeg().from_array(new_array, seg.header, path=seg.path)
+        print(f"Seg.shape from {seg.shape} to {new_array.shape}")
+        return SegImgArray(new_array, seg.info)
 
 
 class MissingSegmentationMessageBox(BasicMessageBox):

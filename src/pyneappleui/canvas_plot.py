@@ -81,18 +81,18 @@ class PlotLayout(QtWidgets.QVBoxLayout):
         x_data = self.decay.x_data if self.decay.x_data is not None else np.array([])
 
         if disp_type == "voxel":
-            if np.any(self.data.nii_dyn.array):
+            if np.any(self.data.img_dyn.array):
                 # if fitting was performed the data might have been scaled
                 y_data = self.data.fit_data.img.array[
                     pos[0], pos[1], self.data.plt["n_slice"].value, :
                 ]
             else:
-                y_data = self.data.nii_img.array[
+                y_data = self.data.img.array[
                     pos[0], pos[1], self.data.plt["n_slice"].value, :
                 ]
         elif disp_type == "segmentation":
             # Check if fit was performed
-            if np.any(self.data.nii_dyn.array):
+            if np.any(self.data.img_dyn.array):
                 seg_index = self.data.fit_data.seg.seg_indices.get(
                     (pos[0], pos[1], self.data.plt["n_slice"].value), None
                 )
@@ -104,7 +104,7 @@ class PlotLayout(QtWidgets.QVBoxLayout):
                 else:
                     y_data = None
             else:
-                y_data = self.data.nii_img.array[
+                y_data = self.data.img.array[
                     pos[0], pos[1], self.data.plt["n_slice"].value, :
                 ]
         else:

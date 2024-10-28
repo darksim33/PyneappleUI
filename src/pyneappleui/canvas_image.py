@@ -2,7 +2,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from PyQt6 import QtWidgets, QtCore
 from PIL import Image
-from pathlib import Path
+
+# from pathlib import Path
 from copy import deepcopy
 
 from PyQt6.QtGui import QIntValidator
@@ -21,7 +22,7 @@ from matplotlib.backends.backend_qtagg import (
 import matplotlib.patches as patches
 from matplotlib.figure import Figure
 
-from nifti import Nii, NiiSeg
+from radimgarray import RadImgArray, SegImgArray, tools
 
 if TYPE_CHECKING:
     from .pyneapple_ui import MainWindow
@@ -57,7 +58,9 @@ class SliceNumberEdit(QLineEdit):
         ):
             pass
         else:
-            raise TypeError(f"Value needs to be either integer, float or string.")
+            raise TypeError(
+                f"Value needs to be either integer, float or string. Not {type(value)}"
+            )
 
         if value is not None:
             try:
@@ -102,8 +105,8 @@ class ImageCanvas(QtWidgets.QGridLayout):
     def __init__(
         self,
         parent: MainWindow,
-        image: Nii = Nii(),
-        segmentation: NiiSeg = NiiSeg(),
+        image: RadImgArray = RadImgArray([]),
+        segmentation: SegImgArray = SegImgArray([]),
         settings: dict = None,  # settings is the appdata plt settings dict
         window_width: int = 0,
         theme: str = "Light",
@@ -230,24 +233,24 @@ class ImageCanvas(QtWidgets.QGridLayout):
         return self._image
 
     @image.setter
-    def image(self, nii: Nii):
-        if nii.path:
-            self._image = nii
+    def image(self, _img: RadImgArray):
+        if _img.size > 0:
+            self._image = _img
             self.setup_image()
 
             self.scrollbar.setEnabled(True)
-            self.scrollbar.setMaximum(nii.array.shape[2])
+            self.scrollbar.setMaximum(_img.array.shape[2])
             self.slice_number_edit.setEnabled(True)
-            self.slice_number_edit.setMaximum(nii.array.shape[2])
+            self.slice_number_edit.setMaximum(_img.array.shape[2])
 
     @property
     def segmentation(self):
         return self._segmentation
 
     @segmentation.setter
-    def segmentation(self, nii: NiiSeg):
-        if nii.path:
-            self._segmentation = nii
+    def segmentation(self, _img: SegImgArray):
+        if _img.size > 0:
+            self._segmentation = _img
             if self.settings["show_segmentation"]:
                 self.deploy_segmentation()
                 self.canvas.draw()
@@ -337,8 +340,8 @@ class ImageCanvas(QtWidgets.QGridLayout):
         # get current Slice
         # self.slice_number = self.slice_number_edit.value()
 
-        if self.image.path:
-            img_display = self.image.to_rgba_array(self.slice_value)
+        if self.image.size > 0:
+            img_display = tools.slice_to_rgba(self.img, self.slice_value, 1)
             self.axis.clear()
             self.axis.imshow(img_display, cmap="gray")
             if self.settings["show_segmentation"] and self.segmentation.path:
@@ -409,7 +412,7 @@ class ImageCanvas(QtWidgets.QGridLayout):
         self.deploy_default_image()
 
         # Remove data from Widget
-        self.image.clear()
+        self.image = RadImgArray([])
         self.segmentation.clear()
 
     def on_scroll(self, event):
